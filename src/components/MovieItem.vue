@@ -6,6 +6,11 @@
     <div class="movie-col-right">
         <div class="movie-title">
             <h2>{{ movie.Title }}</h2>
+            <div class="movie-sessions">
+                <div v-for="session in filteredSessions(sessions)" class="session-time-wrapper">
+                    <div class="session-time">{{ formatSessionTime(session.time) }}</div>
+                </div>
+            </div>
             <span class="movie-rating">{{ movie.Rated }}</span>
         </div>
     </div>
@@ -13,7 +18,32 @@
 </template>
 
 <script>
+import times from '../util/times';
 export default {
-    props: ['movie']
+    props: ['movie', 'sessions', 'day', 'time'],
+    methods: {
+        formatSessionTime(raw) {
+            return this.$moment(raw).format('h:mm A');
+        },
+        filteredSessions(sessions) {
+            return sessions.filter(this.sessionPassesTimeFilter);
+        },
+        sessionPassesTimeFilter(session) {
+            //return true;
+            if (!this.day.isSame(this.$moment(session.time), 'day')) {
+                return false;
+            }
+            else if (this.time.length === 0 || this.time.length === 2) {
+                return true;
+            }
+            else if (this.time[0] === times.AFTER_6PM) {
+                return this.$moment(session.time).hour() >= 18; // 6PM
+            }
+            else // BEFORE
+            {
+                return this.$moment(session.time).hour() < 18; // 6PM
+            }
+        }
+    }
 }
 </script>

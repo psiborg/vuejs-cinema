@@ -20,6 +20,14 @@ import MovieFilter from './components/MovieFilter.vue';
 import VueResource from 'vue-resource';
 Vue.use(VueResource);
 
+import moment from 'moment-timezone';
+moment.tz.setDefault('UTC');
+Object.defineProperty(Vue.prototype, '$moment', {
+	get() {
+		return this.$root.moment;
+	}
+}); // $ = public API convention
+
 new Vue({
 	el: '#app',
 /*
@@ -30,7 +38,9 @@ new Vue({
 	data: {
 		genre: [],
 		time: [],
-		movies: []
+		movies: [],
+		moment,
+		day: moment()
 	},
 	methods: {
 		checkFilter(category, title, checked) {
